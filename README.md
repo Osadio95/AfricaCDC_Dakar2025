@@ -25,9 +25,11 @@
 
 ----
 
-## Dossier de travail  
-** Le dossier de travail est accessible grâce au lien ci-dessous :**  
-https://drive.google.com/drive/folders/1FY4Wkm0uSTxy-G30qWvSNxepRyPH_AHX?usp=drive_link
+## Dossier de travail
+
+**Le dossier de travail est accessible grâce au lien ci-dessous :**  
+🔗 [Cliquez pour accéder au dossier sur Google Drive](https://drive.google.com/drive/folders/1FY4Wkm0uSTxy-G30qWvSNxepRyPH_AHX?usp=drive_link)
+
 ---
 
 ## Workflow
