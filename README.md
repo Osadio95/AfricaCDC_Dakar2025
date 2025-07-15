@@ -19,7 +19,7 @@
 - [14) Recherche avec abricate](#14-recherche-de-gènes-de-résistance-facteurs-de-virulence-et-plasmides-avec-abricate)
 - [15) Recherche avec ResFinder](#15-recherche-de-gènes-de-résistance-et-mutations-avec-resfinder)
 - [16) Analyse de la MLST](#16-analyse-de-la-mlst)
-- [Exercice 2](#exercice-2--reprendre-le-workflow-bactérien-à-partir-des-reads-téléchargés)
+- [Exercice 1](#exercice-1--reprendre-le-workflow-bacterien-a-partir-des-reads-telecharges)
 - [18) Annotation du génome](#18-annotation-du-génome)
 - [Commandes avec Docker](#commandes-avec-docker)
 
