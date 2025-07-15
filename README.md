@@ -280,7 +280,7 @@ conda deactivate
 
 ---
 
-## 13) Installation de abricate pour recherche de gènes de résistance et facteurs de virulence
+## 13) Installation de abricate
 
 ```bash
 conda activate abricate
