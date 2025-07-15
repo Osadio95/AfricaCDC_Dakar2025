@@ -499,4 +499,4 @@ SeqSero2_package.py -i salmonella.fasta -m k -t 4
 
 ---
 
-*Formation Africa CDC - Module bactériologie niveau débutant - Juillet 2025*
+*Formation Africa CDC - Module bactériologie - Juillet 2025*
