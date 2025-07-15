@@ -1,0 +1,9 @@
+Output directory:	/home/sadio/sra/SeqSero_result_07_07_2025_16_36_014140472
+Input files:	salmonella.fasta
+O antigen prediction:	4
+H1 antigen prediction(fliC):	i
+H2 antigen prediction(fljB):	1,2
+Predicted identification:	Salmonella enterica subspecies enterica (subspecies I)
+Predicted antigenic profile:	4:i:1,2
+Predicted serotype:	Typhimurium
+Note:	

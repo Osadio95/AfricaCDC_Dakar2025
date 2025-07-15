@@ -1,0 +1,26 @@
+Database structure QC is OK at /home/sadio/miniconda3/envs/amr/lib/python3.12/site-packages/ectyper/Data/ectyper_alleles_db.json
+Starting ectyper v2.0.0 running on O and H antigen allele database v1.0 (11-03-2020) and pathotype database v2024-10-03
+Output_directory is /home/sadio/sra/ectyper1
+Command-line arguments Namespace(input=['S1_assembled/scaffolds.fasta'], longreads=False, maxdirdepth=0, cores=1, percentIdentityOtype=95, percentIdentityHtype=95, percentCoverageOtype=90, percentCoverageHtype=50, verify=False, output='ectyper1', reference='/home/sadio/miniconda3/envs/amr/lib/python3.12/site-packages/ectyper/Data/EnteroRef_GTDBSketch_20231003_V2.msh', sequence=False, debug=False, dbpath=None, pathotype=False, percentIdentityPathotype=90, percentCoveragePathotype=50)
+MASH species id sketch at /home/sadio/miniconda3/envs/amr/lib/python3.12/site-packages/ectyper/Data/EnteroRef_GTDBSketch_20231003_V2.msh exists and is in good health and does not need to be downloaded
+Gathering genome files list ...
+Overall identified 1 file(s) (scaffolds.fasta) to process ...
+Identifying genome file types on 1 inputs ...
+Creating combined reference database fasta file at /home/sadio/sra/ectyper1/tmp_B3t6KuGpb/combined_ident_serotype.fasta ...
+Assembling final list of fasta files
+Verifying the E.coli-ness of the genome files and validity of file inputs
+For /home/sadio/sra/S1_assembled/scaffolds.fasta following top hits and hash ratios returned by MASH [('GCF_003399895.2', '898/1000'), ('GCF_001576395.1', '892/1000'), ('GCF_026227205.1', '867/1000'), ('GCF_026800035.1', '867/1000'), ('GCF_024700435.1', '859/1000')]
+MASH species top hit GCF_003399895.2 identified as Escherichia coli with distance 0.00263042 to /home/sadio/sra/S1_assembled/scaffolds.fasta and shared hashes ratio 898/1000
+MASH dist predicted species name: 'Escherichia coli' based on species ID sketch /home/sadio/miniconda3/envs/amr/lib/python3.12/site-packages/ectyper/Data/EnteroRef_GTDBSketch_20231003_V2.msh
+Standardizing the E.coli genome headers based on file names
+Updating fasta headers ....
+Creating blast O- and H- antigen database from ['/home/sadio/sra/ectyper1/tmp_B3t6KuGpb/tmpl8h4sro4']
+Starting blast alignment on O- and H- antigen database ['/home/sadio/sra/ectyper1/tmp_B3t6KuGpb/tmpl8h4sro4']
+Predicting serotype from BLAST output /home/sadio/sra/ectyper1/tmp_B3t6KuGpb/tmp_ua8C0k9kn/blastdb_.output
+Highly similar O-antigen candidates were found for ['O13', 'O135']
+Serotype prediction successfully completed for scaffolds
+BLAST output file against reference alleles is written at ectyper1/blastn_output_alleles.txt
+Reporting final results to output.tsv file ...
+Name	Species	SpeciesMashRatio	SpeciesMashDistance	SpeciesMashTopID	O-type	H-type	Serotype	QC	Evidence	GeneScores	AlleleKeys	GeneIdentities(%)	GeneCoverages(%)	GeneContigNames	GeneRanges	GeneLengths	DatabaseVer	Warnings	Pathotype	PathotypeCounts	PathotypeGenes	PathotypeGeneNames	PathotypeAccessions	PathotypeAlleleIDs	PathotypeIdentities(%)	PathotypeCoverages(%)	PathotypeGeneLengthRatios	PathotypeRuleIDs	PathotypeGeneCounts	PathoDBVer	StxSubtypes	StxAccessions	StxAlleleIDs	StxAlleleNames	StxIdentities(%)	StxCoverages(%)	StxLengths	StxContigNames	StxCoordinates
+scaffolds	Escherichia coli	898/1000	0.00263042	GCF_003399895.2	O13/O135	H11	O13/O135:H11	-	Based on 3 allele(s)	wzx:1;wzy:1;fliC:1;	O13-1-wzx-origin;O13-2-wzy-origin;H11-4-fliC;	100;100;99.931;	100;100;100;	NODE_10_length_139963_cov_19.917582;NODE_10_length_139963_cov_19.917582;NODE_33_length_51726_cov_19.200228;	80018-81274;83113-84261;22763-24221;	1257;1149;1459;	v1.0 (11-03-2020)	High similarity O-antigen group 10:O13/O129/O135 as per A.Iguchi et.al (PMID: 25428893)	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+ECTyper has finished successfully. Results available at /home/sadio/sra/ectyper1
