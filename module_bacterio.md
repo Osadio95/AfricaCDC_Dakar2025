@@ -19,7 +19,6 @@
 - [14) Recherche avec abricate](#14-recherche-de-gènes-de-résistance-facteurs-de-virulence-et-plasmides-avec-abricate)
 - [15) Recherche avec ResFinder](#15-recherche-de-gènes-de-résistance-et-mutations-avec-resfinder)
 - [16) Analyse de la MLST](#16-analyse-de-la-mlst)
-- [Exercice 1](#exercice-1)
 - [Exercice 2](#exercice-2--reprendre-le-workflow-bactérien-à-partir-des-reads-téléchargés)
 - [18) Annotation du génome](#18-annotation-du-génome)
 - [Commandes avec Docker](#commandes-avec-docker)
@@ -28,7 +27,8 @@
 
 ## Workflow
 
-![Workflow Diagram](C:/Users/bmd tech/Downloads/DIC1.drawio.png)
+<img width="1542" height="731" alt="DIC1 drawio" src="https://github.com/user-attachments/assets/365e4b01-4ac4-4e0e-9239-6e72c6d3340f" />
+
 
 ---
 
@@ -90,6 +90,7 @@ conda activate amr
 conda install -c bioconda -c conda-forge fastp=1.0.1 mash=2.3 nanoplot=1.44.1 resfinder sra-tools=3.2.1 ectyper=2.0.0 -y
 
 # Vérification des installations
+fastp --version
 mash --version
 NanoPlot --version
 ectyper --version
@@ -100,7 +101,7 @@ python -m resfinder --version
 conda deactivate
 ```
 
-> **📝 Note :** Il faut au préalable activer l'environnement conda dans lequel vous avez installé le logiciel
+> ** Note :** Il faut au préalable activer l'environnement conda dans lequel vous avez installé le logiciel
 
 ---
 
@@ -119,7 +120,7 @@ fastqc S1_R2.fastq.gz
 fastqc *fastq.gz
 ```
 
-**📖 Ressources :** [Interprétation du rapport fastQC - Modules d'analyse de FastQC (site officiel)](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/)
+** Ressources :** [Interprétation du rapport fastQC - Modules d'analyse de FastQC (site officiel)](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/)
 
 ---
 
@@ -374,13 +375,7 @@ conda deactivate
 
 ---
 
-## Exercice 1
-
-**📋 Consigne :** Voir le dossier exercice1 du dossier partagé sur drive
-
----
-
-## Exercice 2 : Reprendre le workflow bactérien à partir des reads téléchargés
+## Exercice 1 : Reprendre le workflow bactérien à partir des reads téléchargés
 
 ```bash
 conda activate amr
