@@ -108,7 +108,7 @@ python -m resfinder --version
 conda deactivate
 ```
 
-> ** Note :** Il faut au préalable activer l'environnement conda dans lequel vous avez installé le logiciel
+**Note :** Il faut au préalable activer l'environnement conda dans lequel vous avez installé le logiciel
 
 ---
 
@@ -127,14 +127,14 @@ fastqc S1_R2.fastq.gz
 fastqc *fastq.gz
 ```
 
-** Ressources :** [Interprétation du rapport fastQC - Modules d'analyse de FastQC (site officiel)](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/)
+**Ressources :** [Interprétation du rapport fastQC - Modules d'analyse de FastQC (site officiel)](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/)
 
 ---
 
 ## 6) Correction des reads
 
 ```bash
-fastp -i S1_R1.fastq.gz -I S1_R2.fastq.gz -o trim_S1_R1.fastq.gz -O trim_S1_R2.fastq.gz -f 18 -F 18 -t 18 -T 18 -M 20 --detect_adapter_for_pe --dedup
+fastp -i S1_R1.fastq.gz -I S1_R2.fastq.gz -o trim_S1_R1.fastq.gz -O trim_S1_R2.fastq.gz -f 10 -F 18 -t 10 -T 10 -M 20 --detect_adapter_for_pe --dedup
 ```
 
 **Explication des paramètres :**
