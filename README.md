@@ -23,6 +23,11 @@
 - [18) Annotation du génome](#18-annotation-du-génome)
 - [Commandes avec Docker](#commandes-avec-docker)
 
+----
+
+## Dossier drive 
+** Le dossier de travail est accessible grâce au lien ci-dessous :**
+https://drive.google.com/drive/folders/1FY4Wkm0uSTxy-G30qWvSNxepRyPH_AHX?usp=drive_link
 ---
 
 ## Workflow
