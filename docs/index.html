@@ -1,1 +1,466 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Formation Bioinformatique – Kraken & Bracken</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link rel="stylesheet" href="reveal.js-4.5.0/dist/reveal.css">
+  <link rel="stylesheet" href="reveal.js-4.5.0/dist/theme/white.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+      
+    }
+
+    nav {
+      width: 250px;
+      background-color: #f2f2f2;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+    }
+
+    nav h2 {
+      font-size: 20px;
+      margin-top: 0;
+    }
+
+    nav ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    nav li {
+      margin: 10px 0;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #333;
+    }
+
+    .reveal-container {
+      margin-left: 250px;
+      flex-grow: 1;
+      padding: 20px;
+    }
+
+    .reveal .slides {
+      display: block !important;
+      text-align: left;
+      max-width: 960px;
+      margin: auto;
+    }
+
+    .reveal section {
+      font-size: 22px;
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+    pre code {
+  display: block;
+  background-color: #f5f5f5;
+  border-left: 4px solid #ccc;
+  padding: 10px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #333;
+}
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <nav>
+  <h2>Sommaire</h2>
+  <ul>
+    <li><a href="#Identification des espèces">1. Identification des espèces</a>
+      <ul>
+        <li><a href="#mash">1.1 Mash</a></li>
+        <li><a href="#kracken">1.2 Kracken</a></li>
+        <li><a href="#bracken">1.3 Bracken</a></li>
+        <li><a href="#busco">1.4 Busco</a></li>
+      </ul>
+    <li><a href="#genotypage">2. Génotypage bacterien</a>
+        <ul>
+        <li><a href="#serotypage">2.1 Serotypage</a></li>
+        <li><a href="#mlst">2.2 MLST</a></li>
+        <li><a href="#cgmlst">2.3 CgMLST</a></li>
+      </ul>
+    </li>
+    </li>
+  </ul>
+</nav>
+
+  <div class="reveal-container">
+    <div class="reveal">
+      <div class="slides">
+
+<section id="Identification des espèces">
+  <h2>1. Identification des espèces</h2>
+      <p>L'identification des espèces est une étape fondamentale en génomique, notamment dans le cadre de la surveillance microbiologique, des investigations d’épidémies ou de la recherche clinique. En effet, déterminer à quelle espèce appartient un génome séquencé permet de :
+<ul>
+<li>✅ Connaître le pathogène impliqué : chaque espèce bactérienne possède des caractéristiques biologiques, écologiques et pathogéniques spécifiques. Savoir de quelle espèce il s'agit oriente directement les décisions cliniques et de santé publique.<li>
+
+<li>🧬 Mieux interpréter les résultats génomiques : la recherche de gènes de résistance, de virulence ou de plasmides n’a de sens que si l’on connaît le contexte biologique de l’organisme étudié. Par exemple, un gène de résistance trouvé chez Salmonella n’a pas les mêmes implications que chez E. coli.</li>
+
+<li>🧭 Comparer les génomes à des références appropriées : pour des analyses comme le typage (MLST, cgMLST), le calcul de l’ANI, ou la recherche de SNPs, il est indispensable d’avoir une référence de la même espèce.</li>
+
+<li>🧪 Éviter les erreurs d’interprétation dues à des contaminations : l’identification rapide permet aussi de détecter la présence éventuelle de séquences exogènes, comme des contaminations croisées ou des co-infections.</li>
+
+<li>🌍 Contribuer à la veille sanitaire : en identifiant les espèces en circulation, on peut suivre l’évolution des pathogènes dans une population ou un environnement donné (ex. : hôpital, élevage, alimentation, etc.).</li>
+
+<li>En résumé, l’identification des espèces est un prérequis essentiel à toute analyse bioinformatique fiable. C’est une étape de tri et de validation qui permet d’assurer la pertinence biologique des résultats génomiques produits. Ici nous allons travailler avec l'outil <strong>MASH</strong>.</li>
+</ul>
+</section>
+
+<section id="mash">
+  <h3>1.1 Mash : Estimation rapide des similarités génomiques</h3>
+  <p><strong>Mash</strong> (pour "MinHash") est un outil bioinformatique qui permet de comparer rapidement de grands ensembles de séquences, comme des génomes, sans avoir besoin d’un alignement classique. Il est particulièrement adapté à l’identification des espèces dans un contexte de séquençage à haut débit.
+
+</p>
+
+  <h4>🔬 Principe de fonctionnement</h4>
+  <ul>
+    <li>Mash réduit les séquences à un "sketch" composé d’un sous-ensemble représentatif de k-mers.</li>
+    <li>Il mesure la similarité entre deux sketchs en calculant la distance de Jaccard approximée.</li>
+    <li>Les distances sont utilisées pour estimer la proximité génomique entre un échantillon et une base de données de référence.</li>
+  </ul>
+
+  <h4>⚙️ Exemple de commande</h4>
+  <pre><code># Créer un sketch à partir de vos contigs
+mash sketch -o echantillon mash_contigs.fasta
+
+# Comparer à une base de référence
+mash dist refseq_sketch.msh echantillon.msh > distances.txt
+</code></pre>
+
+  <h4>🔗 Lien vers le projet GitHub</h4>
+  <p><a href="https://github.com/marbl/Mash" target="_blank">https://github.com/marbl/Mash</a></p>
+
+  <h4>✅ Avantages</h4>
+  <ul>
+    <li>Très rapide, même sur des milliers de génomes</li>
+    <li>Indépendant du type de séquençage (long ou court)</li>
+    <li>Peut être utilisé pour identifier, regrouper ou comparer des échantillons</li>
+  </ul>
+</section>
+
+<section id="kracken">
+          <h3>1.2 Kraken2 : Classification taxonomique</h3>
+          <p><strong>Kraken2</strong> est un outil bioinformatique de classification taxonomique rapide et efficace, utilisé pour identifier les espèces présentes dans un échantillon métagénomique à partir de lectures (reads) de séquençage.</p>
+          <h4>🔍 Principe de fonctionnement</h4>
+          <ul>
+            <li><strong>Basé sur les k-mers :</strong> Kraken découpe chaque séquence en petits segments de longueur fixe appelés <em>k-mers</em>.</li>
+            <li><strong>Base de données pré-indexée :</strong> Chaque k-mer est associé à un taxon (espèce, genre, etc.) dans une base de données construite à l’avance à partir de génomes de référence.</li>
+            <li><strong>Attribution par LCA (Lowest Common Ancestor) :</strong> Si un k-mer est partagé par plusieurs espèces, Kraken attribue le k-mer au plus petit ancêtre commun.</li>
+            <li><strong>Vote majoritaire :</strong> Chaque read est classé selon le taxon qui reçoit le plus de votes parmi les k-mers qui le composent.</li>
+          </ul>
+          <h4>⚙️ Exemple de commande Kraken2</h4>
+          <pre><code>kraken2 --db /chemin/vers/base_de_donnees \
+  --threads 4 --use-names \
+  --report rapport.txt --output resultats.txt \
+  echantillon.fastq</code></pre>
+          <h4>✅ Avantages</h4>
+          <ul>
+            <li>Très rapide, même sur de gros jeux de données</li>
+            <li>Utilisation efficace de la mémoire</li>
+            <li>Résultats hiérarchiques exploitables (espèce, genre, etc.)</li>
+            <li>Peut être utilisé sur des lectures Illumina ou Nanopore et même sur des fichiers d'assemblage</li>
+          </ul>
+        </section>
+<section id="bracken">
+          <h3>1.3 Bracken : Estimation de l'abondance</h3>
+          <p><strong>Bracken</strong> (Bayesian Reestimation of Abundance after Classification with Kraken) est un outil complémentaire à Kraken2. Il permet de recalculer les abondances taxonomiques en corrigeant les biais introduits par les classifications initiales de Kraken.</p>
+          <h4>🔍 Pourquoi utiliser Bracken ?</h3>
+          <ul>
+            <li>Kraken2 classe les lectures individuellement, ce qui peut conduire à une <strong>sous-estimation des espèces spécifiques</strong>.</li>
+            <li>Bracken utilise un modèle statistique bayésien pour <strong>réévaluer l’abondance réelle des taxons</strong>.</li>
+          </ul>
+          <h4>⚙️ Fonctionnement</h4>
+          <ul>
+            <li>Utilise le fichier <code>--report</code> de Kraken2</li>
+            <li>Redistribue les lectures classées à des taxons plus précis</li>
+            <li>Génère un tableau d’abondance par taxon</li>
+          </ul>
+          <h4>🧪 Exemple de commande Bracken</h4>
+          <pre><code>bracken -d /chemin/vers/base_de_donnees \
+  -i rapport.txt \
+  -o abondance_species.txt \
+  -r 150 -l S</code></pre>
+          <p><strong>Paramètres clés :</strong><br>
+            <code>-r</code> : longueur des reads (ex: 150 pour Illumina)<br>
+            <code>-l</code> : niveau taxonomique (<code>S</code>=Species, <code>G</code>=Genus)
+          </p>
+          <h4>✅ Résultats</h4>
+          <ul>
+            <li>Meilleure estimation des abondances</li>
+            <li>Sortie tabulaire : nom taxon, rang, nombre de lectures, pourcentage</li>
+          </ul>
+        </section>
+<section id="busco">
+  <h3>1.4 BUSCO : Évaluation de la complétude d’un assemblage</h3>
+  <p><strong>BUSCO</strong> (Benchmarking Universal Single-Copy Orthologs) est un outil bioinformatique qui permet d’évaluer la qualité et la complétude d’un génome ou d’un assemblage en recherchant des gènes orthologues universels et présents en copie unique dans un groupe taxonomique donné.</p>
+
+  <h4>🔬 Principe de fonctionnement</h4>
+  <ul>
+    <li>BUSCO utilise des bases de données de gènes orthologues spécifiques à un clade (bactéries, protistes, etc.).</li>
+    <li>Il recherche la présence de ces gènes dans un génome ou un assemblage pour évaluer la complétude.</li>
+    <li>Le résultat inclut le pourcentage de gènes : <strong>complets</strong>, <strong>dupliqués</strong>, <strong>fragmentés</strong> ou <strong>absents</strong>.</li>
+  </ul>
+
+  <h4>⚙️ Exemple de commande</h4>
+  <pre><code>busco -i mon_assemblage.fasta \
+  -o resultat_busco \
+  -l bacteria_odb10 \
+  -m genome</code></pre>
+
+  <h4>🔗 Lien vers le projet gitlab</h4>GitHub
+  <p><a href="https://gitlab.com/ezlab/busco" target="_blank">https://gitlab.com/ezlab/busco</a></p>
+
+  <h4>✅ Avantages</h4>
+  <ul>
+    <li>Évaluation rapide et standardisée de la qualité d’un assemblage</li>
+    <li>Permet de comparer différents assemblages entre eux</li>
+    <li>Large choix de bases de données adaptées à différents groupes taxonomiques</li>
+  </ul>
+</section>
+<section id="genotypage">
+  <h2>2. Génotypage des souches bactériennes</h2>
+  <p>Le <strong>génotypage bactérien</strong> regroupe l’ensemble des méthodes permettant de <strong>caractériser finement une souche</strong> à partir de son matériel génétique. Contrairement à l’identification de l’espèce, le génotypage vise à différencier les souches <strong>au sein d’une même espèce</strong>, ce qui est essentiel pour :</p>
+  <ul>
+    <li>🔍 Suivre la propagation d’une souche lors d’une épidémie,</li>
+    <li>🧭 Établir des liens épidémiologiques entre différents cas,</li>
+    <li>🧪 Identifier des clones résistants ou virulents,</li>
+    <li>🧬 Mieux comprendre la diversité génétique des populations bactériennes.</li>
+  </ul>
+
+  <h3>🧰 Trois approches majeures</h3>
+
+  <h4>1. Sérotypage in silico</h4>
+  <p>Le sérotypage permet de prédire le <strong>sérotype</strong> d’une souche (par exemple pour <em>Salmonella</em> ou <em>E. coli</em>) à partir de la présence de gènes spécifiques (O, H, K). Cette approche est souvent utilisée pour remplacer les méthodes sérologiques traditionnelles.</p>
+
+  <h4>2. MLST (Multilocus Sequence Typing)</h4>
+  <p>Le MLST repose sur l’analyse de <strong>7 gènes de ménage (housekeeping genes)</strong>. Chaque allèle est numéroté et une combinaison d’allèles définit un <strong>ST (sequence type)</strong>. C’est une méthode largement utilisée pour la surveillance internationale, car elle est standardisée.</p>
+
+  <h4>3. cgMLST (core genome MLST)</h4>
+  <p>Le cgMLST est une extension du MLST classique, utilisant <strong>des centaines voire des milliers de loci du génome core</strong>. Il offre une <strong>résolution beaucoup plus fine</strong>, utile pour les investigations d’épidémies hospitalières ou alimentaires.</p>
+
+  <h3>🎯 En résumé</h3>
+  <p>Le génotypage génomique est un outil de <strong>traçabilité</strong>, de <strong>surveillance</strong> et de <strong>compréhension évolutive</strong> des pathogènes. Chaque méthode a son niveau de résolution et ses cas d’usage. Dans cette présentation, nous allons explorer successivement le sérotypage, le MLST et le cgMLST.</p>
+</section>
+<section id="serotypage">
+  <h3>2.1 Sérotypage : Classification antigénique des souches</h3>
+
+  <h4>🧬 Définition et importance</h4>
+  <p>Le <strong>sérotypage</strong> est une méthode de classification des bactéries basée sur les <strong>antigènes de surface</strong>, tels que :</p>
+  <ul>
+    <li>🔸 <strong>Antigènes O</strong> : présents sur la paroi cellulaire (lipopolysaccharides), notamment chez les <em>Enterobacteriaceae</em>.</li>
+    <li>🔸 <strong>Antigènes H</strong> : flagellaires, liés à la mobilité.</li>
+    <li>🔸 <strong>Antigènes K</strong> : capsulaires, comme chez <em>E. coli</em> ou <em>Salmonella</em>.</li>
+  </ul>
+
+  <h4>🎯 Applications clés</h4>
+  <ul>
+    <li>🧪 <strong>Épidémiologie</strong> : Suivi des épidémies (ex. <em>Salmonella enterica</em> sérovar Typhi).</li>
+    <li>🏥 <strong>Diagnostic médical</strong> : Identification de pathogènes (ex. <em>E. coli</em> O157:H7).</li>
+    <li>💉 <strong>Vaccinologie</strong> : Conception de vaccins (ex. contre <em>Streptococcus pneumoniae</em>).</li>
+  </ul>
+
+  <h4>🧰 Outils bioinformatiques pour le sérotypage</h4>
+  <p>Il existe un certain nombre d'outils bioinformatiques disponibles pour le sérotypage des souches bactériennes. La plupart sont spécifiques à une espèce :</p>
+
+  <ul>
+    <li>🔬 <strong>Pour Salmonella spp.</strong> : 
+      <a href="https://github.com/denglab/SeqSero2" target="_blank">SeqSero</a>, 
+      <a href="https://github.com/phac-nml/sistr_cmd" target="_blank">sistr_cmd</a>, 
+      <a href="https://github.com/SeroTools/SeroTools" target="_blank">SeroTools</a>
+    </li>
+    <li>🔬 <strong>Pour Neisseria meningitidis</strong> : 
+      <a href="https://github.com/INNUENDOCON/meningotype" target="_blank">meningotype</a>
+    </li>
+    <li>🔬 <strong>Pour Escherichia coli</strong> : 
+      <a href="https://github.com/phac-nml/ECTyper" target="_blank">ECTyper</a>, 
+      <a href="https://github.com/INNUENDOCON/ecoli_serotyper" target="_blank">ecoli_serotyper</a>
+    </li>
+    <li>🔬 <strong>Pour STEC</strong> : 
+      <a href="https://github.com/ssi-dk/STECFinder" target="_blank">STECFinder</a>
+    </li>
+    <li>🔬 <strong>Pour Vibrio parahaemolyticus</strong> : 
+      <a href="https://github.com/lanl/VPsero" target="_blank">VPsero</a>
+    </li>
+    <li>🔬 <strong>Pour Pseudomonas aeruginosa</strong> : 
+      <a href="https://github.com/Pseudomonas-Serotyping/PAst" target="_blank">PAst</a>
+    </li>
+    <li>🔬 <strong>Pour Listeria monocytogenes</strong> : 
+      <a href="https://github.com/Listeria-genomics/LisSero" target="_blank">LisSero</a>
+    </li>
+    <li>🔬 <strong>Pour Shigella</strong> : 
+      <a href="https://github.com/phiweger/ShigEiFinder" target="_blank">ShigEiFinder</a>, 
+      <a href="https://github.com/phe-bioinformatics/ShigaPass" target="_blank">ShigaPass</a>
+    </li>
+    <li>🔬 <strong>Pour Streptococcus pneumoniae</strong> : 
+      <a href="https://github.com/sanger-pathogens/seroBA" target="_blank">seroBA</a>, 
+      <a href="https://github.com/phe-bioinformatics/PneumoCaT" target="_blank">PneumoCaT</a>, 
+      <a href="https://github.com/CDCgov/SeroCall" target="_blank">SeroCall</a>, 
+      <a href="https://github.com/MDU-PHL/Serotyping" target="_blank">Serotyping</a>, 
+      <a href="https://github.com/shakya-lab/seqSerotyper" target="_blank">seqSerotyper</a>
+    </li>
+    <li>🔬 <strong>Pour Streptococcus suis</strong> : 
+      <a href="https://github.com/cptobie/SsuisSerotyping_pipeline" target="_blank">SsuisSerotyping_pipeline</a>
+    </li>
+  </ul>
+
+  <h4>📘 Outils utilisés dans ce cours</h4>
+  <p>Dans ce cours, nous allons travailler avec les outils suivants :</p>
+  <ul>
+    <li>🔧 <strong>SeqSero2</strong> pour le sérotypage de <em>Salmonella</em></li>
+    <li>🔧 <strong>ECTyper</strong> pour le sérotypage de <em>E. coli</em></li>
+  </ul>
+
+  <h4>⚙️ Exemples de commande</h4>
+
+  <p><strong>▶️ SeqSero2 avec un fichier d’assemblage FASTA :</strong></p>
+  <pre><code>SeqSero2_package.py -m fasta -i echantillon.fasta -o resultat_seqsero</code></pre>
+
+  <p><strong>▶️ ECTyper avec un fichier d’assemblage FASTA :</strong></p>
+  <pre><code>ectyper -i echantillon.fasta -o resultat_ectyper</code></pre>
+
+</section>
+
+<section id="mlst">
+  <h3>2.2 MLST : Multilocus Sequence Typing</h3>
+
+  <h4>🧬 Principe général</h4>
+  <p>Le <strong>typage par séquence multi-focus (MLST)</strong> consiste à séquencer de manière systématique <strong>plusieurs loci conservés</strong> du génome bactérien (généralement sept gènes de ménage). Les séquences alléliques sont comparées à une base de données de référence pour attribuer un <strong>type de séquence (ST)</strong> à l’isolat.</p>
+
+  <p>Chaque combinaison unique d’allèles constitue un profil qui est ensuite utilisé pour :</p>
+  <ul>
+    <li>🧭 Étudier les lignées bactériennes</li>
+    <li>🧬 Suivre l’évolution clonale</li>
+    <li>🌍 Comparer des souches à l’échelle mondiale</li>
+  </ul>
+
+  <p>Les profils alléliques sont comparés à ceux référencés dans les bases de données hébergées sur le site <a href="https://pubmlst.org" target="_blank">pubmlst.org</a>.</p>
+
+  <h4>📘 Spécificité par espèce</h4>
+  <p>Le nombre et le type de gènes utilisés pour le MLST varient selon les espèces. Voici deux exemples :</p>
+
+  <p><strong>🔬 Staphylococcus aureus</strong> (7 gènes de ménage) :</p>
+  <ul>
+    <li><code>arcC</code> – carbamate kinase</li>
+    <li><code>aroE</code> – shikimate déshydrogénase</li>
+    <li><code>glpF</code> – glycérol kinase</li>
+    <li><code>gmk</code> – guanylate kinase</li>
+    <li><code>pta</code> – phosphate acétyltransférase</li>
+    <li><code>tpi</code> – triosephosphate isomérase</li>
+    <li><code>yqiL</code> – acétyl coenzyme A acétyltransférase</li>
+  </ul>
+
+  <p><strong>🔬 Vibrio vulnificus</strong> (10 gènes de ménage) :</p>
+  <ul>
+    <li><code>glp</code> – glucose-6-phosphate isomérase</li>
+    <li><code>gyrB</code> – ADN gyrase, sous-unité B</li>
+    <li><code>mdh</code> – malate-lactate déshydrogénase</li>
+    <li><code>metG</code> – méthionyl-ARNt synthétase</li>
+    <li><code>purM</code> – phosphoribosylaminoimidazole synthétase</li>
+    <li><code>dtdS</code> – thréonine déshydrogénase</li>
+    <li><code>lysA</code> – diaminopimélate décarboxylase</li>
+    <li><code>pntA</code> – transhydrogénase alpha sous-unité</li>
+    <li><code>pyrC</code> – dihydroorotase</li>
+    <li><code>tnaA</code> – tryptophanase</li>
+  </ul>
+
+  <h4>🧰 Outil utilisé dans ce cours</h4>
+  <p>Nous allons utiliser l’outil <code>mlst</code> développé par <strong>Torsten Seemann</strong>, disponible sur GitHub :</p>
+  <p><a href="https://github.com/tseemann/mlst" target="_blank">https://github.com/tseemann/mlst</a></p>
+
+  <h4>⚙️ Exemple de commande</h4>
+  <p>Pour lancer une analyse MLST sur un fichier d’assemblage FASTA :</p>
+  <pre><code>mlst echantillon.fasta</code></pre>
+
+  <p>Le programme détecte automatiquement l’espèce et ensuite determine la ST correspondante.</p>
+</section>
+
+<section id="cgmlst">
+  <h3>2.3 cgMLST : Typage par génome cœur</h3>
+
+  <h4>🧬 Qu’est-ce que le cgMLST ?</h4>
+  <p>Le <strong>cgMLST</strong>, ou <em>core genome Multilocus Sequence Typing</em>, est une méthode de typage génomique qui étend le MLST classique. Alors que le MLST traditionnel analyse seulement 7 gènes dits "de ménage", le cgMLST prend en compte <strong>des centaines à des milliers de gènes conservés</strong> dans le génome (appelés <em>core genes</em>).</p>
+
+  <p>Chaque gène est comparé à une base de données pour détecter sa version (appelée <strong>allèle</strong>), et le profil allélie complet est ensuite utilisé pour comparer les souches entre elles.</p>
+
+  <p>👉 Cette approche permet une résolution beaucoup plus fine que le MLST traditionnel, ce qui la rend très utile pour :</p>
+  <ul>
+    <li>🦠 Étudier des <strong>clusters épidémiques</strong> de manière très précise</li>
+    <li>🧬 <strong>Comparer des souches clonales</strong> dans un même hôpital ou une même région</li>
+    <li>🧭 Réaliser une <strong>surveillance génomique à haute résolution</strong></li>
+  </ul>
+
+  <h4>🛠️ Outil : chewBBACA</h4>
+  <p><strong>chewBBACA</strong> (prononcé "Chewbacca") est un outil développé pour faire du cgMLST à grande échelle. Il permet :</p>
+  <ul>
+    <li>📦 De créer ou utiliser un schéma cgMLST existant (par espèce)</li>
+    <li>🔍 D’assigner un allèle à chaque gène d’un assemblage</li>
+    <li>📊 De générer un fichier de profils alléliques prêt pour la visualisation</li>
+  </ul>
+
+  <p>Chaque échantillon obtient un "code" basé sur des centaines de loci, ce qui permet une comparaison fine entre souches très proches.</p>
+
+  <h4>🧾 Exemple de commande chewBBACA</h4>
+  <pre><code>chewBBACA.py AlleleCall \\
+  -i genomes_folder/ \\
+  -g schema_cgmlst/ \\
+  -o resultats_cgmlst/ \\
+  --ptf bacteria.ptf NB: cette partie sera plus developpée en exercices pratiques.</code></pre>
+
+  <h4>📈 Visualisation avec GrapeTree</h4>
+  <p>Les résultats du cgMLST peuvent être visualisés sous forme d’arbre avec <strong>GrapeTree</strong>, un outil interactif développé pour visualiser les distances génétiques entre souches.</p>
+  <p>Chaque nœud représente une souche, et les branches reflètent les différences d’allèles entre les profils. Cela permet de :</p>
+  <ul>
+    <li>👀 Identifier visuellement les clusters de souches proches</li>
+    <li>🧪 Étudier la dynamique d’une épidémie</li>
+    <li>📌 Intégrer des métadonnées (origine, date, statut, etc.) pour l’analyse</li>
+  </ul>
+
+  <p>Le fichier des profils alléliques produit par chewBBACA (ex. <code>allele_matrix.tsv</code>) peut être directement importé dans GrapeTree (en ligne ou via EnteroBase).</p>
+
+  <h4>🔗 Liens utiles</h4>
+  <ul>
+    <li>🧰 <a href="https://github.com/B-UMMI/chewBBACA" target="_blank">chewBBACA (GitHub)</a></li>
+    <li>🌳 <a href="https://github.com/achtman-lab/GrapeTree" target="_blank">GrapeTree Viewer</a></li>
+  </ul>
+</section>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="reveal.js-4.5.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    embedded: true,
+    controls: false,
+    progress: false,
+    transition: 'none'
+  });
+</script>
+
+</body>
+</html>
